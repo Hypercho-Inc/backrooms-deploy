@@ -1,8 +1,15 @@
 # THRESHOLD
 
-A three-chapter first-person browser survival-horror game built with Three.js. Every campaign creates connected procedural Backrooms mazes with distinct environments, objectives, realistic lighting, spatial audio, environmental storytelling, collectible recordings, and a persistent animated hunter. Play solo or open a room for cooperative multiplayer with proximity voice.
+A three-chapter first-person browser survival-horror game built with Vite, React, TypeScript, Tailwind CSS, and Three.js. Every campaign creates connected procedural Backrooms mazes with distinct environments, objectives, realistic lighting, spatial audio, environmental storytelling, collectible recordings, and a persistent animated hunter. Play solo or open a room for cooperative multiplayer with proximity voice.
 
 Source repository: [duolahypercho/backrooms](https://github.com/duolahypercho/backrooms)
+
+## Architecture
+
+- React and TypeScript render the application shell: lobby, waiting room, HUD, controls, and accessibility structure.
+- The existing imperative Three.js runtime owns procedural generation, rendering, lighting, animation, AI, and the frame loop.
+- Tailwind CSS is available for new interface work; the bespoke stylesheet remains responsible for the cinematic horror treatment.
+- React mounts the complete DOM contract before dynamically starting the Three.js runtime, keeping the game engine independent from UI re-renders.
 
 ## Chapters
 

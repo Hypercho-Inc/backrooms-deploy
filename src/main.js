@@ -25,8 +25,6 @@ import {
   stepHiding,
   stepNoiseImpulse,
 } from './survival.js';
-import './style.css';
-
 const N = 1;
 const E = 2;
 const S = 4;

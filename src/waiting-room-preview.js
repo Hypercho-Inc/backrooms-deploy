@@ -25,21 +25,22 @@ export function createWaitingRoomPreview(THREE, {
   let visible = false;
   let disposed = false;
   let players = [];
+  let previewTime = 0;
 
   function initialize() {
     if (scene || disposed) return;
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(28, 1, 0.1, 20);
-    camera.position.set(0, 0.9, 4.05);
+    camera.position.set(0, 0.9, 4.55);
     camera.lookAt(0, 0.84, 0);
 
-    const hemisphere = new THREE.HemisphereLight(0xeee6c7, 0x15180f, 3.2);
-    const key = new THREE.DirectionalLight(0xffe9ad, 5.8);
+    const hemisphere = new THREE.HemisphereLight(0xeee6c7, 0x15180f, 2.2);
+    const key = new THREE.DirectionalLight(0xffe9ad, 3.6);
     key.position.set(-2.4, 4.2, 3.8);
-    const rim = new THREE.DirectionalLight(0x91b0a1, 3.4);
+    const rim = new THREE.DirectionalLight(0x91b0a1, 2.2);
     rim.position.set(3.2, 2.4, -2.6);
-    const face = new THREE.PointLight(0xffe8b6, 22, 7, 2);
+    const face = new THREE.PointLight(0xffe8b6, 9, 7, 2);
     face.position.set(0, 1.9, 3.1);
     scene.add(hemisphere, key, rim, face);
 
@@ -85,7 +86,7 @@ export function createWaitingRoomPreview(THREE, {
       name: String(player.name || 'WANDERER'),
       ready: player.ready === true,
       color: new THREE.Color(player.look?.color ?? 0x81794b)
-        .offsetHSL(0, 0.035, 0.13)
+        .offsetHSL(0, 0.1, 0.12)
         .getHex(),
       characterId: typeof player.characterId === 'string' && player.characterId
         ? player.characterId
@@ -115,8 +116,8 @@ export function createWaitingRoomPreview(THREE, {
         materials.filter(Boolean).forEach((material) => {
           if (!material.isMeshStandardMaterial || material.userData.waitingRoomLit) return;
           material.userData.waitingRoomLit = true;
-          material.emissive.copy(material.color).multiplyScalar(0.62);
-          material.emissiveIntensity = 1.45;
+          material.emissive.copy(material.color).multiplyScalar(0.2);
+          material.emissiveIntensity = 0.72;
         });
       });
     });
@@ -130,7 +131,7 @@ export function createWaitingRoomPreview(THREE, {
     const previousAutoClear = renderer.autoClear;
     const previousExposure = renderer.toneMappingExposure;
     renderer.autoClear = false;
-    renderer.toneMappingExposure = Math.max(previousExposure, 1.55);
+    renderer.toneMappingExposure = Math.max(previousExposure, 1.18);
     renderer.setScissorTest(true);
 
     const canvasRect = canvas.getBoundingClientRect();
@@ -180,7 +181,12 @@ export function createWaitingRoomPreview(THREE, {
     setPlayers,
     update(deltaSeconds) {
       if (!visible || disposed) return;
-      manager?.update(reducedMotion ? 0 : deltaSeconds, camera);
+      const delta = reducedMotion ? 0 : deltaSeconds;
+      previewTime += delta;
+      manager?.update(delta, camera);
+      manager?.forEach((entry) => {
+        entry.group.rotation.y = -0.12 + Math.sin(previewTime * 0.72 + entry.id.length) * 0.12;
+      });
       render();
     },
     dispose() {
