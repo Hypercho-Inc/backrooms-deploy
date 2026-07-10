@@ -78,6 +78,29 @@ function TouchControls() {
       <button id="touch-light" type="button">LIGHT</button>
       <button id="touch-flash" type="button">FLASH</button>
       <button id="touch-action" type="button">OPEN</button>
+      <button id="touch-pause" type="button">PAUSE</button>
+    </div>
+  );
+}
+
+function VhsOverlay() {
+  return (
+    <div id="vhs-overlay" aria-hidden="true">
+      <div className="vhs-scanlines" />
+      <div className="vhs-tracking-band" />
+      <div className="vhs-chromatic-band vhs-chromatic-band-a" />
+      <div className="vhs-chromatic-band vhs-chromatic-band-b" />
+      <div className="vhs-dropout-band vhs-dropout-band-a" />
+      <div className="vhs-dropout-band vhs-dropout-band-b" />
+
+      <div className="vhs-readout vhs-readout-top">
+        <span id="vhs-rec"><i />REC</span>
+        <time id="vhs-timestamp" dateTime="1998-09-23">1998.09.23</time>
+      </div>
+      <div className="vhs-readout vhs-readout-bottom">
+        <span id="vhs-sector">SECTOR 00</span>
+        <time id="vhs-timecode" dateTime="PT0S">00:00:00:00</time>
+      </div>
     </div>
   );
 }
@@ -111,6 +134,10 @@ function Overlay() {
             <span id="enter-label">ENTER LEVEL 0</span>
             <i aria-hidden="true">↳</i>
           </button>
+
+          <a id="experience-switch" href="?campaign=1&level=0">
+            PLAY CAMPAIGN
+          </a>
 
           <details className="overlay-panel overlay-channel">
             <summary>OPEN CHANNEL</summary>
@@ -155,6 +182,7 @@ export function GameShell() {
       <div id="vignette" aria-hidden="true" />
       <canvas id="grain" aria-hidden="true" />
       <div id="threat" aria-hidden="true" />
+      <VhsOverlay />
 
       <Hud />
       <TouchControls />

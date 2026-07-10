@@ -110,6 +110,213 @@ button {
   transition: opacity 300ms ease;
 }
 
+#vhs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: none;
+  overflow: hidden;
+  color: rgba(225, 229, 210, 0.82);
+  opacity: 0;
+  pointer-events: none;
+  contain: strict;
+  font-family: "Courier New", monospace;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.92);
+}
+
+#game[data-experience="endless"] #vhs-overlay {
+  display: block;
+  opacity: 1;
+}
+
+.vhs-scanlines,
+.vhs-tracking-band,
+.vhs-chromatic-band,
+.vhs-dropout-band {
+  position: absolute;
+  pointer-events: none;
+}
+
+.vhs-scanlines {
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(4, 7, 6, 0.04) 0,
+      rgba(4, 7, 6, 0.04) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    linear-gradient(90deg, rgba(43, 116, 106, 0.016), transparent 42%, rgba(137, 37, 49, 0.014));
+  opacity: 0.78;
+  mix-blend-mode: soft-light;
+}
+
+.vhs-tracking-band {
+  top: 0;
+  left: -4%;
+  width: 108%;
+  height: clamp(26px, 5vh, 64px);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(226, 233, 216, 0.045) 35%,
+    rgba(226, 233, 216, 0.11) 49%,
+    rgba(10, 14, 12, 0.12) 52%,
+    transparent
+  );
+  opacity: 0.58;
+  transform: translate3d(0, -12vh, 0);
+  animation: vhs-tracking-roll 10.8s linear infinite;
+  will-change: transform;
+}
+
+.vhs-chromatic-band {
+  left: -8%;
+  width: 116%;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 4%,
+    rgba(51, 171, 170, 0.22) 28%,
+    rgba(224, 230, 210, 0.08) 52%,
+    rgba(173, 52, 72, 0.2) 76%,
+    transparent 96%
+  );
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: vhs-chromatic-slip 7.6s steps(1, end) infinite;
+}
+
+.vhs-chromatic-band-a {
+  top: 31%;
+}
+
+.vhs-chromatic-band-b {
+  top: 68%;
+  animation-delay: -4.1s;
+}
+
+.vhs-dropout-band {
+  left: -10%;
+  width: 120%;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 12px,
+    rgba(232, 235, 219, 0.22) 12px 18px,
+    transparent 18px 31px
+  );
+  opacity: 0;
+  transform: translate3d(-4%, 0, 0) scaleX(0.72);
+  transform-origin: left;
+  animation: vhs-dropout-skip 6.4s steps(1, end) infinite;
+}
+
+.vhs-dropout-band-a {
+  top: 43%;
+}
+
+.vhs-dropout-band-b {
+  top: 82%;
+  animation-delay: -2.8s;
+}
+
+.vhs-readout {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  color: rgba(225, 229, 210, 0.76);
+  font-size: clamp(8px, 0.65vw, 10px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.vhs-readout-top {
+  top: max(20px, env(safe-area-inset-top));
+  left: max(22px, env(safe-area-inset-left));
+  gap: 16px;
+}
+
+.vhs-readout-bottom {
+  right: max(22px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  left: max(22px, env(safe-area-inset-left));
+  justify-content: space-between;
+}
+
+#vhs-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(224, 117, 99, 0.92);
+}
+
+#vhs-rec i {
+  width: 6px;
+  height: 6px;
+  background: #b94f3d;
+  border-radius: 50%;
+  animation: vhs-rec-pulse 1.45s steps(1, end) infinite;
+}
+
+#vhs-timestamp,
+#vhs-timecode,
+#vhs-sector {
+  font: inherit;
+}
+
+@keyframes vhs-tracking-roll {
+  from { transform: translate3d(0, -12vh, 0); }
+  to { transform: translate3d(0, 112vh, 0); }
+}
+
+@keyframes vhs-chromatic-slip {
+  0%, 84%, 88%, 100% {
+    opacity: 0;
+    transform: translate3d(-3%, 0, 0) scaleX(0.82);
+  }
+  85% {
+    opacity: 0.42;
+    transform: translate3d(2%, 0, 0) scaleX(0.96);
+  }
+  86% {
+    opacity: 0.17;
+    transform: translate3d(-1%, 0, 0) scaleX(0.88);
+  }
+  87% {
+    opacity: 0.31;
+    transform: translate3d(1%, 0, 0) scaleX(0.92);
+  }
+}
+
+@keyframes vhs-dropout-skip {
+  0%, 69%, 73%, 100% {
+    opacity: 0;
+    transform: translate3d(-4%, 0, 0) scaleX(0.72);
+  }
+  70% {
+    opacity: 0.34;
+    transform: translate3d(3%, 0, 0) scaleX(0.9);
+  }
+  71% {
+    opacity: 0.1;
+    transform: translate3d(-1%, 0, 0) scaleX(0.84);
+  }
+  72% {
+    opacity: 0.24;
+    transform: translate3d(1%, 0, 0) scaleX(0.94);
+  }
+}
+
+@keyframes vhs-rec-pulse {
+  0%, 68% { opacity: 0.92; }
+  69%, 100% { opacity: 0.38; }
+}
+
 #hud {
   position: fixed;
   inset: 0;
@@ -757,6 +964,21 @@ button {
   pointer-events: none;
 }
 
+#game[data-experience="endless"] .hud-mark,
+#game[data-experience="endless"] #objective,
+#game[data-experience="endless"] #coop-hud,
+#game[data-experience="endless"] #chat-panel,
+#game[data-experience="endless"] #survival-hud,
+#game[data-experience="endless"] #interact,
+#game[data-experience="endless"] #evidence-state,
+#game[data-experience="endless"] #stealth-state,
+#game[data-experience="endless"] #stamina,
+#game[data-experience="endless"] #threat,
+#game[data-experience="endless"] .overlay-channel,
+#game[data-experience="endless"] .survival-brief {
+  display: none !important;
+}
+
 #coop-lobby {
   width: min(90vw, 360px);
   border: 1px solid rgba(232, 228, 202, 0.34);
@@ -1383,6 +1605,39 @@ button {
   opacity: 0.48;
 }
 
+#experience-switch {
+  display: none;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 14px;
+  border: 1px solid rgba(232, 228, 202, 0.3);
+  background: rgba(10, 11, 8, 0.66);
+  color: rgba(232, 228, 202, 0.8);
+  font: 700 9px/1 "Courier New", monospace;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 100ms ease;
+}
+
+#game[data-experience="endless"] #experience-switch {
+  display: flex;
+}
+
+#experience-switch:hover,
+#experience-switch:focus-visible {
+  border-color: rgba(232, 228, 202, 0.62);
+  background: rgba(232, 228, 202, 0.1);
+  color: var(--paper);
+  outline: 1px solid rgba(232, 228, 202, 0.34);
+  outline-offset: 3px;
+}
+
+#experience-switch:active {
+  transform: translateY(1px);
+}
+
 #enter-button i {
   font-size: 18px;
   font-style: normal;
@@ -1455,6 +1710,27 @@ button {
 }
 
 @media (pointer: coarse), (max-width: 720px) {
+  .vhs-readout {
+    font-size: 8px;
+    letter-spacing: 0.11em;
+  }
+
+  .vhs-readout-top {
+    top: max(17px, env(safe-area-inset-top));
+    left: max(16px, env(safe-area-inset-left));
+  }
+
+  .vhs-readout-bottom {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(184px, calc(env(safe-area-inset-bottom) + 168px));
+    left: max(16px, env(safe-area-inset-left));
+  }
+
+  .vhs-chromatic-band-b,
+  .vhs-dropout-band-b {
+    display: none;
+  }
+
   #survival-hud {
     top: max(80px, calc(env(safe-area-inset-top) + 64px));
     bottom: auto;
@@ -1522,7 +1798,8 @@ button {
   #touch-crouch,
   #touch-light,
   #touch-flash,
-  #touch-action {
+  #touch-action,
+  #touch-pause {
     position: absolute;
     right: max(22px, env(safe-area-inset-right));
     width: 62px;
@@ -1576,6 +1853,21 @@ button {
 
   #touch-action.is-visible {
     opacity: 1;
+  }
+
+  #touch-pause {
+    display: none;
+    top: max(52px, calc(env(safe-area-inset-top) + 38px));
+    right: auto;
+    left: max(16px, env(safe-area-inset-left));
+    width: 62px;
+    height: 34px;
+    border-radius: 0;
+    font-size: 7px;
+  }
+
+  #game[data-experience="endless"] #touch-pause {
+    display: block;
   }
 
   #interact {
@@ -1646,6 +1938,10 @@ button {
 
   #controls-copy {
     display: none;
+  }
+
+  #game[data-experience="endless"] #controls-copy {
+    display: flex;
   }
 
   #coop-hud {
@@ -1762,5 +2058,17 @@ button {
 
   #grain {
     opacity: 0.025;
+  }
+
+  .vhs-tracking-band,
+  .vhs-chromatic-band,
+  .vhs-dropout-band {
+    animation: none !important;
+    opacity: 0;
+  }
+
+  #vhs-rec i {
+    animation: none !important;
+    opacity: 0.82;
   }
 }

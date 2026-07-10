@@ -2,7 +2,7 @@
   "name": "threshold-backrooms",
   "private": true,
   "version": "4.1.0",
-  "description": "An immersive three-level Backrooms survival-horror game with cooperative multiplayer and spatial voice chat.",
+  "description": "An endless VHS data-center Backrooms exploration game with a 30-level cooperative survival campaign.",
   "type": "module",
   "repository": {
     "type": "git",

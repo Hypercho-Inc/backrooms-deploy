@@ -1,6 +1,6 @@
 # THRESHOLD
 
-A 30-chapter first-person browser survival-horror game built with Vite, React, TypeScript, Tailwind CSS, and Three.js. Every campaign creates connected procedural Backrooms mazes with distinct environments, objectives, physically calibrated lighting, generated high-detail materials, spatial audio, environmental storytelling, collectible recordings, and a persistent animated hunter. Play solo or open a room for cooperative multiplayer with proximity voice.
+A first-person browser horror game built with Vite, React, TypeScript, Tailwind CSS, and Three.js. The default experience is an endless, chunk-streamed data-center labyrinth seen through a deteriorating VHS camcorder. A separate 30-chapter survival campaign remains available with procedural Backrooms levels, objectives, multiplayer rooms, proximity voice, and a persistent animated hunter.
 
 Source repository: [duolahypercho/backrooms](https://github.com/duolahypercho/backrooms)
 
@@ -10,6 +10,17 @@ Source repository: [duolahypercho/backrooms](https://github.com/duolahypercho/ba
 - The existing imperative Three.js runtime owns procedural generation, rendering, lighting, animation, AI, and the frame loop.
 - Tailwind CSS is available for new interface work; the bespoke stylesheet remains responsible for the cinematic horror treatment.
 - React mounts the complete DOM contract before dynamically starting the Three.js runtime, keeping the game engine independent from UI re-renders.
+
+## Endless data center
+
+Opening `/` launches **SITE ∞**, an exploration-only mode with no exit, objectives, combat, monster, death state, or finite map edge. Use `?endless=1&seed=1234` to share a deterministic layout; use `?campaign=1&level=0` to enter the original campaign.
+
+- Signed global cell coordinates generate topology and content without storing a world extent. Shared edges are canonical, reload order does not change a sector, and guaranteed cross-aisles plus divider gates keep the infinite grid connected.
+- A bounded chunk manager keeps only the nearby 3×3 mobile or 5×5 desktop sector window alive. Rendered geometry shifts around a floating origin while global coordinates and sector identities remain stable.
+- Long server aisles are interrupted by empty maintenance bays, abandoned desks and chairs, cabinets, floor cables, vents, broken fixtures, and rare warm-lit rooms.
+- Rack faces carry deterministic green, red, blue, and cyan LEDs, including independently blinking indicators. Fluorescent cohorts remain steady, flicker, fail, or glow warm while a local light pool keeps darkness readable.
+- Persistent scanlines, grain, rolling tracking, chromatic slips, dropout bands, `REC`, timestamp, timecode, and sector readouts create the camcorder presentation during play—not only on menus.
+- The sound engine layers electrical room tone, ventilation, server rotors, fluorescent ballast, hard-drive seeks, and footsteps. A capped nearest-source pool uses HRTF panning and distance gain so machinery becomes clearer as the player approaches it.
 
 ## Chapters
 
@@ -46,7 +57,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173/`, select **ENTER LEVEL 0**, and allow pointer lock. The development command starts both the game and its room server.
+Open `http://127.0.0.1:5173/`, select **BEGIN RECORDING**, and allow pointer lock. The development command starts both the game and its room server. Select **PLAY 30-LEVEL CAMPAIGN** on the landing screen for the survival game.
 
 ## Cooperative multiplayer
 
@@ -84,13 +95,16 @@ See the [multiplayer server self-hosting guide](server/README.md) for a copyable
 - `Shift`: run
 - `Ctrl` or `C`: crouch
 - `F`: toggle flashlight
+- `Esc`: pause and release the mouse
+
+Campaign-only controls:
+
 - `Q`: use a loud, battery-hungry camera flash
 - Hold `E`: repair a fuse or valve
 - `E`: play an archive, check a lock, or open the EXIT
 - `Enter`: open room chat (co-op)
-- `Esc`: pause and release the mouse
 
-Touch devices use a movement pad, right-side swipe look, run and crouch controls, flashlight and flash buttons, and a contextual hold/open button. Touch targets reflow for small phones, and sound/voice controls remain usable during play.
+Touch devices use a movement pad, right-side swipe look, run and crouch controls, and a flashlight button. Campaign mode also exposes flash and contextual interaction controls. Touch targets reflow for small phones, and sound/voice controls remain usable during play.
 
 The game honors the operating system's **Reduce Motion** preference by disabling automatic blackout flicker and sharply reducing camera-flash intensity. The normal presentation contains flashing lights.
 

@@ -1364,6 +1364,7 @@ async function init() {
   }
 
   const query = new URLSearchParams(window.location.search);
+  dom.game.dataset.experience = 'campaign';
   const qaMode = query.has('qa') && !query.has('room');
   const qaAutowalk = query.has('autowalk');
   const qaComplete = qaMode && query.has('complete');
@@ -5812,7 +5813,21 @@ async function init() {
   requestAnimationFrame(animate);
 }
 
-init().catch((error) => {
+const entryQuery = new URLSearchParams(window.location.search);
+const launchEndlessDataCenter = entryQuery.has('endless') || (
+  !entryQuery.has('campaign')
+  && !entryQuery.has('level')
+  && !entryQuery.has('room')
+  && !entryQuery.has('qa')
+  && !entryQuery.has('server')
+  && entryQuery.get('layout') !== 'shared'
+);
+
+const launchPromise = launchEndlessDataCenter
+  ? import('./endless-data-center.js').then(({ startEndlessDataCenter }) => startEndlessDataCenter())
+  : init();
+
+launchPromise.catch((error) => {
   console.error(error);
   dom.unsupported.classList.add('is-visible');
 });
