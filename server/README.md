@@ -153,6 +153,19 @@ For Vercel:
 
 Every player who should see and join the same rooms must use the same `VITE_MULTIPLAYER_URL`. Separate server deployments have separate room directories.
 
+## Automated deployment mirror
+
+The production repositories use a one-way, commit-preserving deployment flow:
+
+```text
+duolahypercho/backrooms:main -> Vercel
+                             -> Hypercho-Inc/backrooms-deploy:main -> Koyeb
+```
+
+Every push to canonical `main` starts [the deployment mirror workflow](../.github/workflows/sync-deployment-mirror.yml), which immediately fast-forwards `Hypercho-Inc/backrooms-deploy:main` to the same commit. Vercel deploys canonical `main` directly while Koyeb auto-deploys the mirrored `main`, so both services receive the same revision.
+
+The workflow's write-enabled deploy key can access only `Hypercho-Inc/backrooms-deploy`. Its private half is stored as `DEPLOY_MIRROR_SSH_KEY` in the canonical repository's `deployment-mirror` environment, which accepts deployments only from `main`. Treat the deployment repository as generated and do not commit to it directly. If it diverges, the workflow stops instead of overwriting its commits; reconcile the branch manually and rerun the workflow from canonical `main`.
+
 ## Run behind your own reverse proxy
 
 On a VPS, keep the Node process alive with systemd, another process manager, or a container supervisor. Terminate TLS at a reverse proxy and forward WebSocket upgrades without rewriting the path.
