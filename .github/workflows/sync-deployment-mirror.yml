@@ -1,0 +1,51 @@
+name: Sync deployment mirror
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-deployment-mirror
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'Hypercho-Inc/backrooms-deploy' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out deployment main
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Fast-forward from canonical main
+        env:
+          CANONICAL_REPOSITORY: duolahypercho/backrooms
+        run: |
+          set -euo pipefail
+          git remote add canonical "https://github.com/${CANONICAL_REPOSITORY}.git"
+          git fetch --no-tags canonical main
+
+          source_sha=$(git rev-parse refs/remotes/canonical/main)
+          mirror_sha=$(git rev-parse HEAD)
+
+          if [[ "$source_sha" == "$mirror_sha" ]]; then
+            echo "Deployment mirror is already current at $source_sha."
+            exit 0
+          fi
+
+          if ! git merge-base --is-ancestor "$mirror_sha" "$source_sha"; then
+            echo "::error::Deployment mirror has commits that are not in canonical main. Reconcile it manually before syncing."
+            exit 1
+          fi
+
+          git push origin "$source_sha:refs/heads/main"
