@@ -1,8 +1,9 @@
 name: Sync deployment mirror
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -14,29 +15,42 @@ concurrency:
 
 jobs:
   sync:
-    if: github.repository == 'Hypercho-Inc/backrooms-deploy' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
+    if: github.repository == 'duolahypercho/backrooms' && github.ref == 'refs/heads/main'
+    environment: deployment-mirror
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
-      - name: Check out deployment main
+      - name: Check out canonical main
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
+          persist-credentials: false
           ref: main
 
-      - name: Fast-forward from canonical main
+      - name: Configure the deployment key
         env:
-          CANONICAL_REPOSITORY: duolahypercho/backrooms
+          DEPLOY_MIRROR_SSH_KEY: ${{ secrets.DEPLOY_MIRROR_SSH_KEY }}
         run: |
           set -euo pipefail
-          git remote add canonical "https://github.com/${CANONICAL_REPOSITORY}.git"
-          git fetch --no-tags canonical main
+          test -n "$DEPLOY_MIRROR_SSH_KEY"
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_MIRROR_SSH_KEY" > "$HOME/.ssh/backrooms-deploy"
+          chmod 600 "$HOME/.ssh/backrooms-deploy"
+          printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
 
-          source_sha=$(git rev-parse refs/remotes/canonical/main)
-          mirror_sha=$(git rev-parse HEAD)
+      - name: Fast-forward deployment main
+        env:
+          MIRROR_REPOSITORY: Hypercho-Inc/backrooms-deploy
+        run: |
+          set -euo pipefail
+          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/backrooms-deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          git remote add deployment "git@github.com:${MIRROR_REPOSITORY}.git"
+          git fetch --no-tags deployment main
+
+          source_sha=$(git rev-parse HEAD)
+          mirror_sha=$(git rev-parse refs/remotes/deployment/main)
 
           if [[ "$source_sha" == "$mirror_sha" ]]; then
             echo "Deployment mirror is already current at $source_sha."
@@ -48,4 +62,4 @@ jobs:
             exit 1
           fi
 
-          git push origin "$source_sha:refs/heads/main"
+          git push deployment HEAD:refs/heads/main
